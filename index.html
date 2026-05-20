@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>D-Concept Studio — Client Brief</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── DESIGN TOKENS ─────────────────────────────────────────────────────── */
+    :root {
+      --accent:          #C4A46B;
+      --accent-hover:    #8C7045;
+      --accent-subtle:   #F5EDD8;
+      --dark:            #1C1C1A;
+      --dark-800:        #2C2825;
+      --dark-600:        #4A3F32;
+      --surface-page:    #FAF7F2;
+      --surface-section: #F0E8DA;
+      --surface-card:    #FFFFFF;
+      --text-primary:    #2C2825;
+      --text-secondary:  #6B6560;
+      --text-disabled:   #C4C1BB;
+      --text-on-dark:    #E8E0D4;
+      --text-on-accent:  #2C2825;
+      --border-default:  #E4E2DF;
+      --border-hover:    #C4C1BB;
+      --border-focus:    #C4A46B;
+      --radius-sm:   4px;
+      --radius-md:   6px;
+      --radius-lg:   10px;
+      --radius-full: 9999px;
+      --sp-2: 8px;
+      --sp-3: 12px;
+      --sp-4: 16px;
+      --sp-5: 20px;
+      --sp-6: 24px;
+    }
+
+    /* ── RESET ─────────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: var(--dark);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    button { font-family: inherit; border: none; background: none; cursor: pointer; }
+    input  { font-family: inherit; }
+
+    /* ── APP SHELL ─────────────────────────────────────────────────────────── */
+    #root {
+      width: 100%; height: 100%;
+      display: flex; justify-content: center;
+      background: var(--dark);
+    }
+    .app-shell {
+      width: 100%; max-width: 430px;
+      height: 100dvh;
+      position: relative;
+      overflow: hidden;
+      background: var(--surface-page);
+    }
+
+    /* ── SCREEN TRANSITIONS ────────────────────────────────────────────────── */
+    .screen-wrap {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface-page);
+    }
+    @keyframes enterFromRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to   { transform: translateX(0);    opacity: 1; }
+    }
+    @keyframes exitToLeft {
+      from { transform: translateX(0);     opacity: 1; }
+      to   { transform: translateX(-30%);  opacity: 0; }
+    }
+    @keyframes enterFromLeft {
+      from { transform: translateX(-100%); opacity: 0; }
+      to   { transform: translateX(0);     opacity: 1; }
+    }
+    @keyframes exitToRight {
+      from { transform: translateX(0);    opacity: 1; }
+      to   { transform: translateX(30%);  opacity: 0; }
+    }
+    .enter-forward  { animation: enterFromRight 300ms cubic-bezier(0.4,0,0.2,1) forwards; }
+    .exit-forward   { animation: exitToLeft     300ms cubic-bezier(0.4,0,0.2,1) forwards; }
+    .enter-backward { animation: enterFromLeft  300ms cubic-bezier(0.4,0,0.2,1) forwards; }
+    .exit-backward  { animation: exitToRight    300ms cubic-bezier(0.4,0,0.2,1) forwards; }
+
+    /* ── TOP BAR ───────────────────────────────────────────────────────────── */
+    .top-bar {
+      height: 52px; flex-shrink: 0;
+      background: var(--surface-card);
+      border-bottom: 0.5px solid var(--border-default);
+      display: flex; align-items: center;
+      padding: 0 var(--sp-5); gap: var(--sp-4);
+    }
+    .top-bar-brand { display: flex; align-items: baseline; gap: 6px; flex-shrink: 0; }
+    .brand-name {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.14em; color: var(--dark);
+      text-transform: uppercase;
+    }
+    .brand-sub { font-size: 11px; color: var(--text-secondary); }
+    .progress-track {
+      flex: 1; height: 4px;
+      background: var(--border-default);
+      border-radius: var(--radius-full); overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; background: var(--accent);
+      border-radius: var(--radius-full);
+      transition: width 400ms cubic-bezier(0.4,0,0.2,1);
+    }
+    .step-counter { font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
+
+    /* ── SCREEN BODY ───────────────────────────────────────────────────────── */
+    .screen-body {
+      flex: 1; overflow-y: auto;
+      padding: var(--sp-6) var(--sp-5);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ── BOTTOM BAR ────────────────────────────────────────────────────────── */
+    .bottom-bar {
+      flex-shrink: 0;
+      background: var(--surface-card);
+      border-top: 0.5px solid var(--border-default);
+      display: flex; align-items: center;
+      padding: var(--sp-4) var(--sp-5);
+      padding-bottom: max(var(--sp-4), env(safe-area-inset-bottom));
+      gap: var(--sp-3);
+      min-height: 72px;
+    }
+
+    /* ── BUTTONS ───────────────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: var(--sp-2);
+      font-size: 13px; font-weight: 500;
+      border-radius: var(--radius-md);
+      transition: background 150ms ease, transform 100ms ease, opacity 150ms;
+      white-space: nowrap; cursor: pointer;
+    }
+    .btn:active:not(:disabled) { transform: scale(0.98); }
+
+    .btn-accent {
+      background: var(--accent); color: var(--text-on-accent);
+      height: 40px; padding: 0 var(--sp-4);
+    }
+    .btn-accent:hover:not(:disabled) { background: var(--accent-hover); }
+    .btn-accent:disabled {
+      background: var(--border-default);
+      color: var(--text-disabled);
+      cursor: not-allowed; transform: none;
+    }
+    .btn-accent-lg {
+      background: var(--accent); color: var(--text-on-accent);
+      height: 52px; padding: 0 var(--sp-5);
+      font-size: 14px; width: 100%;
+      border-radius: var(--radius-md);
+    }
+    .btn-accent-lg:hover { background: var(--accent-hover); }
+
+    .btn-ghost {
+      background: transparent; color: var(--text-secondary);
+      border: 1px solid var(--border-default);
+      height: 40px; padding: 0 var(--sp-4);
+    }
+    .btn-ghost:hover {
+      background: var(--surface-section);
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+    .btn-full { width: 100%; }
+
+    /* ── SELECTION CARD ────────────────────────────────────────────────────── */
+    .selection-card {
+      display: flex; align-items: center;
+      gap: var(--sp-3); padding: 0 var(--sp-4);
+      background: var(--surface-card);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 150ms ease-in-out;
+      width: 100%; text-align: left;
+      min-height: 52px;
+    }
+    .selection-card:hover {
+      border-color: var(--border-hover);
+      background: var(--surface-section);
+    }
+    .selection-card.selected {
+      border: 1.5px solid var(--accent);
+      background: var(--accent-subtle);
+    }
+    .selection-card.card-lg { min-height: 64px; padding-top: 14px; padding-bottom: 14px; }
+
+    .sc-icon {
+      width: 20px; height: 20px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: var(--text-secondary);
+    }
+    .selection-card.selected .sc-icon { color: var(--accent); }
+
+    .sc-content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    .sc-label    { font-size: 14px; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
+    .sc-sublabel { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+
+    .sc-indicator {
+      width: 16px; height: 16px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .radio-ring {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 1.5px solid var(--border-default);
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 150ms;
+    }
+    .selection-card.selected .radio-ring { border-color: var(--accent); }
+    .radio-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+      transform: scale(0);
+      transition: transform 200ms cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .selection-card.selected .radio-dot { transform: scale(1); }
+
+    .checkbox-box {
+      width: 16px; height: 16px; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-default);
+      display: flex; align-items: center; justify-content: center;
+      transition: all 150ms;
+    }
+    .selection-card.selected .checkbox-box {
+      background: var(--accent); border-color: var(--accent);
+    }
+
+    /* ── OPTION LISTS ──────────────────────────────────────────────────────── */
+    .options-list  { display: flex; flex-direction: column; gap: 10px; }
+    .options-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    /* ── TEXT INPUT ────────────────────────────────────────────────────────── */
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+    .text-input {
+      height: 40px; padding: 0 var(--sp-3);
+      background: var(--surface-card);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      font-size: 14px; color: var(--text-primary);
+      outline: none; width: 100%;
+      transition: border-color 150ms;
+    }
+    .text-input::placeholder { color: var(--text-disabled); }
+    .text-input:focus { border: 1.5px solid var(--border-focus); }
+    .form-row { display: flex; gap: 12px; }
+    .form-row .form-group { flex: 1; }
+
+    /* ── TYPOGRAPHY ────────────────────────────────────────────────────────── */
+    .display-xl {
+      font-family: 'DM Serif Display', serif;
+      font-size: 56px; font-weight: 400; line-height: 1.05;
+    }
+    .heading-h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 32px; font-weight: 400; line-height: 1.2;
+    }
+    .heading-h2 { font-size: 24px; font-weight: 500; color: var(--text-primary); line-height: 1.3; }
+    .heading-h3 { font-size: 18px; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
+    .body-md    { font-size: 14px; line-height: 1.65; }
+    .caption    { font-size: 11px; line-height: 1.5; }
+    .divider    { height: 1px; background: var(--border-default); margin: 24px 0; }
+
+    /* ── S01 WELCOME ───────────────────────────────────────────────────────── */
+    .s01 {
+      background: var(--dark);
+      display: flex; flex-direction: column; height: 100%;
+    }
+    .s01-logo { padding: 48px 24px 0; }
+    .s01-logo .brand-name { color: var(--accent); font-size: 13px; letter-spacing: 0.2em; display: block; }
+    .s01-logo .brand-sub  { font-size: 12px; color: var(--text-secondary); display: block; margin-top: 3px; }
+    .s01-body {
+      flex: 1; padding: 0 24px;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .s01-lead  { font-size: 16px; color: var(--text-on-dark); opacity: 0.7; }
+    .s01-hero  { color: var(--text-on-dark); margin-top: 8px; }
+    .s01-rule  { height: 1px; background: var(--dark-600); margin: 32px 0; }
+    .s01-desc  { font-size: 14px; color: var(--text-secondary); line-height: 1.75; }
+    .s01-footer { padding: 24px 24px max(48px, env(safe-area-inset-bottom)); }
+
+    /* ── S11 CHECK ANIMATION ───────────────────────────────────────────────── */
+    @keyframes scaleIn {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .check-circle {
+      width: 80px; height: 80px;
+      background: var(--accent-subtle);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      animation: scaleIn 500ms cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+
+    /* ── SPINNER ───────────────────────────────────────────────────────────── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 15px; height: 15px;
+      border: 2px solid transparent;
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 600ms linear infinite;
+    }
+
+    /* ── PRIVACY NOTE ──────────────────────────────────────────────────────── */
+    .privacy-note {
+      background: var(--surface-section);
+      border-radius: var(--radius-md);
+      padding: 12px var(--sp-4);
+    }
+
+    /* ── TOAST ─────────────────────────────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 88px;
+      left: 50%; transform: translateX(-50%);
+      background: #A32D2D; color: #fff;
+      padding: 10px 20px; border-radius: var(--radius-md);
+      font-size: 13px; z-index: 999; white-space: nowrap;
+    }
+
+    /* ── PLACEHOLDER ───────────────────────────────────────────────────────── */
+    .placeholder-screen {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 8px; padding: 40px 24px;
+    }
+    .placeholder-label {
+      font-size: 15px; font-weight: 500; color: var(--text-secondary);
+    }
+    .placeholder-sub { font-size: 12px; color: var(--text-disabled); }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React 18 -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <!-- Babel standalone (JSX → JS) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Phosphor Icons React v1 UMD -->
+  <script src="https://unpkg.com/phosphor-react@1.4.2/dist/index.umd.js"></script>
+
+  <script type="text/babel">
+    const { useState, useCallback, useRef } = React;
+
+    // ── CONFIG ─────────────────────────────────────────────────────────────────
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpmos7wxoL3jrZpKWIVVaDWD4NCXijWn-11sVzYAVr_BT7yDzmRk0Hcnk7fzezC1Cl/exec";
+
+    // Phosphor Icons namespace
+    const Ph = window.PhosphorReact || {};
+
+    // ── LABEL MAPS ─────────────────────────────────────────────────────────────
+    const LABELS = {
+      loaiCongTrinh:      { 'nha-pho': 'Nhà phố', 'biet-thu': 'Biệt thự', 'can-ho': 'Căn hộ chung cư', 'noi-that': 'Thiết kế nội thất', 'shophouse': 'Shophouse / Nhà dự án' },
+      hinhThucCongTrinh:  { 'xay-moi': 'Xây mới hoàn toàn', 'cai-tao': 'Cải tạo, sửa chữa', 'noi-that': 'Thiết kế nội thất' },
+      soNguoiSong:        { '1-2': '1–2 người', '3-4': '3–4 người', '5-6': '5–6 người', '7+': '7+ người' },
+      soPhongNgu:         { '1': '1 phòng ngủ', '2': '2 phòng ngủ', '3': '3 phòng ngủ', '4+': '4 phòng ngủ trở lên' },
+      khongGianBep:       { 'mo': 'Bếp mở', 'kin': 'Bếp kín', 'chua-biet': 'Chưa có ý kiến' },
+      mucDichPhongKhach:  { 'tiep-khach': 'Tiếp khách, gặp gỡ', 'gia-dinh': 'Sinh hoạt gia đình hàng ngày', 'ca-hai': 'Cả hai đều quan trọng' },
+      toChucTiecTan:      { 'thuong-xuyen': 'Thường xuyên, nhiều người', 'thinh-thoang': 'Thỉnh thoảng, vài lần/năm', 'khong': 'Hầu như không tổ chức' },
+      thamMy:             { 'vua-du': 'Đẹp & bền', 'sang-thoai-mai': 'Sang & thoải mái', 'cao-cap': 'Cao cấp', 'tiet-kiem': 'Đơn giản & tiết kiệm' },
+      uuTienDauTu:        { 'kien-truc': 'Kiến trúc', 'noi-that': 'Nội thất', 'dong-deu': 'Đồng đều & tiết kiệm tối đa', 'tu-van': 'Cần tư vấn thêm' },
+      timeline:           { '1-3-thang': 'Trong 1–3 tháng tới', '3-6-thang': '3–6 tháng tới', 'sau-6-thang': 'Sau 6 tháng', 'chua-chac': 'Chưa chắc' },
+      bietDen:            { 'ban-be': 'Bạn bè / Người thân giới thiệu', 'mang-xa-hoi': 'Mạng xã hội', 'khac': 'Khác' },
+    };
+
+    // ── REUSABLE COMPONENTS ────────────────────────────────────────────────────
+
+    function SelectionCard({ icon: Icon, label, subLabel, selected, type = 'radio', size = 'md', onClick }) {
+      return (
+        <button
+          type="button"
+          onClick={onClick}
+          className={['selection-card', selected ? 'selected' : '', size === 'lg' ? 'card-lg' : ''].filter(Boolean).join(' ')}
+        >
+          {Icon && (
+            <span className="sc-icon">
+              <Icon size={20} weight="regular" />
+            </span>
+          )}
+          <span className="sc-content">
+            <span className="sc-label">{label}</span>
+            {subLabel && <span className="sc-sublabel">{subLabel}</span>}
+          </span>
+          <span className="sc-indicator">
+            <span className="radio-ring"><span className="radio-dot" /></span>
+          </span>
+        </button>
+      );
+    }
+
+    function TopBar({ step }) {
+      const pct = step === 0 ? 0 : (step / 11) * 100;
+      return (
+        <div className="top-bar">
+          <div className="top-bar-brand">
+            <span className="brand-name">D-CONCEPT</span>
+            <span className="brand-sub">studio</span>
+          </div>
+          <div className="progress-track">
+            <div className="progress-fill" style={{ width: `${pct}%` }} />
+          </div>
+          <span className="step-counter">{step}/11</span>
+        </div>
+      );
+    }
+
+    function BottomBar({ onBack, onNext, canProceed, isLastStep, isSubmitting, showBack }) {
+      return (
+        <div className="bottom-bar">
+          {showBack && (
+            <button className="btn btn-ghost" onClick={onBack} style={{ width: 110 }}>
+              ← Quay lại
+            </button>
+          )}
+          <button
+            className="btn btn-accent btn-full"
+            onClick={onNext}
+            disabled={!canProceed || isSubmitting}
+          >
+            {isSubmitting
+              ? <><span className="spinner" /> Đang gửi…</>
+              : isLastStep ? 'Gửi thông tin →' : 'Tiếp theo →'
+            }
+          </button>
+        </div>
+      );
+    }
+
+    // Standard screen shell for S02–S10
+    function ScreenShell({ step, onBack, onNext, canProceed, isLastStep, isSubmitting, showBack, children }) {
+      return (
+        <>
+          <TopBar step={step} />
+          <div className="screen-body">{children}</div>
+          <BottomBar
+            onBack={onBack} onNext={onNext}
+            canProceed={canProceed} isLastStep={isLastStep}
+            isSubmitting={isSubmitting} showBack={showBack}
+          />
+        </>
+      );
+    }
+
+    function TextInput({ label, placeholder, value, onChange, type = 'text', required, helperText }) {
+      return (
+        <div className="form-group">
+          {label && <label className="form-label">{label}{required && ' *'}</label>}
+          <input
+            className="text-input" type={type}
+            placeholder={placeholder} value={value}
+            onChange={e => onChange(e.target.value)}
+          />
+          {helperText && <span style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4, display: 'block' }}>{helperText}</span>}
+        </div>
+      );
+    }
+
+    // ── S01 — WELCOME ──────────────────────────────────────────────────────────
+    function S01_Welcome({ onNext }) {
+      return (
+        <div className="s01">
+          <div className="s01-logo">
+            <span className="brand-name">D-CONCEPT</span>
+            <span className="brand-sub">studio</span>
+          </div>
+          <div className="s01-body">
+            <p className="s01-lead">Hãy kể cho chúng tôi nghe</p>
+            <h1 className="display-xl s01-hero">Về ngôi nhà<br />của bạn…</h1>
+            <div className="s01-rule" />
+            <p className="s01-desc">
+              Chỉ mất 5 phút — giúp chúng tôi hiểu bạn hơn<br />trước khi gặp mặt.
+            </p>
+          </div>
+          <div className="s01-footer">
+            <button className="btn btn-accent-lg" onClick={onNext}>
+              Bắt đầu →
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // ── S02–S11 PLACEHOLDERS (build trong các bước tiếp theo) ─────────────────
+    function Placeholder({ title, step, onBack, onNext, showBack }) {
+      return (
+        <ScreenShell step={step} onBack={onBack} onNext={onNext}
+          canProceed={true} isLastStep={false} isSubmitting={false} showBack={showBack}>
+          <div className="placeholder-screen">
+            <span className="placeholder-label">{title}</span>
+            <span className="placeholder-sub">Đang xây dựng…</span>
+          </div>
+        </ScreenShell>
+      );
+    }
+
+    function S02_LoaiCongTrinh({ answers, update, step, onBack, onNext, canProceed, showBack, isSubmitting }) {
+      const options = [
+        { value: 'nha-pho',   label: 'Nhà phố',               icon: Ph.House },
+        { value: 'biet-thu',  label: 'Biệt thự',              icon: Ph.Buildings },
+        { value: 'can-ho',    label: 'Căn hộ chung cư',       icon: Ph.BuildingApartment },
+        { value: 'noi-that',  label: 'Thiết kế nội thất',     icon: Ph.PaintBrush },
+        { value: 'shophouse', label: 'Shophouse / Nhà dự án', icon: Ph.Storefront },
+      ];
+      return (
+        <ScreenShell step={step} onBack={onBack} onNext={onNext}
+          canProceed={canProceed} isLastStep={false} isSubmitting={isSubmitting} showBack={showBack}>
+          <h2 className="heading-h2">Dự án của anh / chị là…</h2>
+          <div className="options-list" style={{ marginTop: 24 }}>
+            {options.map(opt => (
+              <SelectionCard key={opt.value} icon={opt.icon} label={opt.label}
+                selected={answers.loaiCongTrinh === opt.value} type="radio" size="md"
+                onClick={() => update('loaiCongTrinh', opt.value)} />
+            ))}
+          </div>
+
+          <div className="divider" />
+
+          <h2 className="heading-h2">Diện tích xây dựng dự kiến</h2>
+          <div style={{ marginTop: 12 }}>
+            <TextInput
+              placeholder="Ví dụ: 120"
+              type="number"
+              value={answers.dienTich}
+              onChange={v => update('dienTich', v)}
+              helperText="Đơn vị: Mét vuông"
+            />
+          </div>
+
+          <h2 className="heading-h2" style={{ marginTop: 20 }}>Số tầng cao</h2>
+          <div style={{ marginTop: 12 }}>
+            <TextInput
+              placeholder="Ví dụ: 3"
+              type="number"
+              value={answers.soTang}
+              onChange={v => update('soTang', v)}
+              helperText="Đơn vị: Tầng"
+            />
+          </div>
+        </ScreenShell>
+      );
+    }
+    function S03_HinhThuc({ answers, update, step, onBack, onNext, canProceed, showBack, isSubmitting }) {
+      const options = [
+        { value: 'xay-moi',  label: 'Xây mới hoàn toàn', icon: Ph.Hammer },
+        { value: 'cai-tao',  label: 'Cải tạo, sửa chữa', icon: Ph.Wrench },
+        { value: 'noi-that', label: 'Thiết kế nội thất',  icon: Ph.Couch  },
+      ];
+      return (
+        <ScreenShell step={step} onBack={onBack} onNext={onNext}
+          canProceed={canProceed} isLastStep={false} isSubmitting={isSubmitting} showBack={showBack}>
+
+          <h2 className="heading-h2">Công trình này…</h2>
+          <div className="options-list" style={{ marginTop: 16 }}>
+            {options.map(opt => (
+              <SelectionCard key={opt.value} icon={opt.icon} label={opt.label}
+                selected={answers.hinhThucCongTrinh === opt.value} type="radio" size="md"
+                onClick={() => update('hinhThucCongTrinh', opt.value)} />
+            ))}
+          </div>
+
+          <div className="divider" />
+
+          <h2 className="heading-h2">Địa điểm công trình</h2>
+          <div style={{ marginTop: 16 }}>
+            <TextInput
+              label="Tỉnh / Thành phố"
+              placeholder="VD: TP. Hồ Chí Minh"
+              value={answers.diaTinhThanh}
+              onChange={v => update('diaTinhThanh', v)}
+            />
+          </div>
+          <div style={{ marginTop: 16 }}>
+            <TextInput
+              label="Quận / Huyện"
+              placeholder="VD: Quận Bình Thạnh"
+              value={answers.diaQuanHuyen}
+              onChange={v => update('diaQuanHuyen', v)}
+            />
+          </div>
+
+        </ScreenShell>
+      );
+    }
+    function S04_GiaDinh({ answers, update, step, onBack, onNext, canProceed, showBack, isSubmitting }) {
+      const soNguoiOptions = [
+        { value: '1-2', label: '1–2 người' },
+        { value: '3-4', label: '3–4 người' },
+        { value: '5-6', label: '5–6 người' },
+        { value: '7+',  label: '7+ người'  },
+      ];
+      const thanhVienOptions = [
+        { value: 'tre-em',    label: 'Có trẻ em dưới 6 tuổi',    icon: Ph.Baby         },
+        { value: 'giup-viec', label: 'Người giúp việc ở lại',     icon: Ph.PersonSimple },
+        { value: 'khong-ai',  label: 'Không có ai trong số trên', icon: Ph.Prohibit     },
+      ];
+
+      const handleThanhVien = (value) => {
+        if (value === 'khong-ai') {
+          update('thanhVienDacBiet',
+            answers.thanhVienDacBiet.includes('khong-ai') ? [] : ['khong-ai']
+          );
+        } else {
+          const filtered = answers.thanhVienDacBiet.filter(v => v !== 'khong-ai');
+          update('thanhVienDacBiet',
+            filtered.includes(value) ? filtered.filter(v => v !== value) : [...filtered, value]
+          );
+        }
+      };
+
+      return (
+        <ScreenShell step={step} onBack={onBack} onNext={onNext}
+          canProceed={canProceed} isLastStep={false} isSubmitting={isSubmitting} showBack={showBack}>
+
+          <h2 className="heading-h2">Tổng số người sẽ sống trong nhà?</h2>
+          <div className="options-grid" style={{ marginTop: 16 }}>
+            {soNguoiOptions.map(opt => (
+              <SelectionCard key={opt.value} label={opt.label}
+                selected={answers.soNguoiSong === opt.value} type="radio" size="md"
+                onClick={() => update('soNguoiSong', opt.value)} />
+            ))}
+          </div>
+
+          <div className="divider" />
+
+          <h2 className="heading-h2">Trong nhà có…</h2>
+          <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 6 }}>Chọn tất cả phù hợp</p>
+          <div className="options-list" style={{ marginTop: 12 }}>
+            {thanhVienOptions.map(opt => (
+              <SelectionCard key={opt.value} icon={opt.icon} label={opt.label}
+                selected={answers.thanhVienDacBiet.includes(opt.value)} type="checkbox" size="md"
+                onClick={() => handleThanhVien(opt.value)} />
+            ))}
+          </div>
+
+        </ScreenShell>
+      );
+    }
+    function S05_KhongGian({ answers, update, step, onBack, onNext, canProceed, showBack, isSubmitting }) {
+      const phongNguOptions = [
+        { value: '1',  label: '1 phòng ngủ'           },
+        { value: '2',  label: '2 phòng ngủ'           },
+        { value: '3',  label: '3 phòng ngủ'           },
+        { value: '4+', label: '4 phòng ngủ trở lên'   },
+      ];
+      const bepOptions = [
+        { value: 'mo',        label: 'Bếp mở',         subLabel: 'Thông thoáng, kết nối phòng khách', icon: Ph.Fire        },
+        { value: 'kin',       label: 'Bếp kín',        subLabel: 'Riêng biệt, tránh mùi lan',         icon: Ph.DoorClosed  },
+        { value: 'chua-biet', label: 'Chưa có ý kiến', subLabel: 'Cần tư vấn thêm',                   icon: Ph.Question    },
+      ];
+      return (
+        <ScreenShell step={step} onBack={onBack} onNext={onNext}
+          canProceed={canProceed} isLastStep={false} isSubmitting={isSubmitting} showBack={showBack}>
+
+          <h2 className="heading-h2">Cần bao nhiêu phòng ngủ?</h2>
+          <div className="options-list" style={{ marginTop: 16 }}>
+            {phongNguOptions.map(opt => (
+              <SelectionCard key={opt.value} label={opt.label}
+                selected={answers.soPhongNgu === opt.value} type="radio" size="md"
+                onClick={() => update('soPhongNgu', opt.value)} />
+            ))}
+          </div>
+
+          <div className="divider" />
+
+          <h2 className="heading-h2">Bạn thích không gian bếp như thế nào?</h2>
+          <div className="options-list" style={{ marginTop: 16 }}>
+            {bepOptions.map(opt => (
+              <SelectionCard key={opt.value} icon={opt.icon} label={opt.label} subLabel={opt.subLabel}
+                selected={answers.khongGianBep === opt.value} type="radio" size="lg"
+                onClick={() => update('khongGianBep', opt.value)} />
+            ))}
+          </div>
+
+        </ScreenShell>
+      );
+    }
+    function S06_ThoiQuen({ answers, update, step, onBack, onNext, canProceed, showBack, isSubmitting }) {
+      const phongKhachOptions = [
+        { value: 'tiep-khach', label: 'Tiếp khách, gặp gỡ',           icon: Ph.UsersThree },
+        { value: 'gia-dinh',   label: 'Sinh hoạt gia đình hàng ngày', icon: Ph.HouseLine  },
+        { value: 'ca-hai',     label: 'Cả hai đều quan trọng',         icon: Ph.Intersect  },
+      ];
+      const tiecTanOptions = [
+        { value: 'thuong-xuyen', label: 'Thường xuyên, nhiều người'   },
+        { value: 'thinh-thoang', label: 'Thỉnh thoảng, vài lần/năm'  },
+        { value: 'khong',        label: 'Hầu như không tổ chức'       },
+      ];
+      return (
+        <ScreenShell step={step} onBack={onBack} onNext={onNext}
+          canProceed={canProceed} isLastStep={false} isSubmitting={isSubmitting} showBack={showBack}>
+
+          <h2 className="heading-h2">Phòng khách chủ yếu dùng để làm gì?</h2>
+          <div className="options-list" style={{ marginTop: 16 }}>
+            {phongKhachOptions.map(opt => (
+              <SelectionCard key={opt.value} icon={opt.icon} label={opt.label}
+                selected={answers.mucDichPhongKhach === opt.value} type="radio" size="md"
+                onClick={() => update('mucDichPhongKhach', opt.value)} />
+            ))}
+          </div>
+
+          <div className="divider" />
+
+          <h2 className="heading-h2">Gia đình hay tổ chức tiệc hoặc tụ tập không?</h2>
+          <div className="options-list" style={{ marginTop: 16 }}>
+            {tiecTanOptions.map(opt => (
+              <SelectionCard key={opt.value} label={opt.label}
+                selected={answers.toChucTiecTan === opt.value} type="radio" size="md"
+                onClick={() => update('toChucTiecTan', opt.value)} />
+            ))}
+          </div>
+
+        </ScreenShell>
+      );
+    }
+    function S07_LamViec({ answers, update, toggleArray, step, onBack, onNext, canProceed, showBack, isSubmitting }) {
+      const lamViecOptions = [
+        { value: 'hoc-tap',   label: 'Phòng học tập / văn phòng riêng',     icon: Ph.Desk             },
+        { value: 'giai-tri',  label: 'Phòng giải trí, xem phim, nghe nhạc', icon: Ph.TelevisionSimple },
+        { value: 'phong-tap', label: 'Phòng tập: Gym, Yoga…',               icon: Ph.Barbell          },
+        { value: 'khong-can', label: 'Không cần',                            icon: Ph.MinusCircle      },
+      ];
+      const camGiacOptions = [
+        { value: 'sang-thoang', label: 'Sáng & thoáng đãng', icon: Ph.SunHorizon },
+        { value: 'am-gian-di',  label: 'Ấm & gần gũi',       icon: Ph.Leaf       },
+        { value: 'don-gian',    label: 'Đơn giản & tiết kiệm',icon: Ph.Minus      },
+      ];
+      return (
+        <ScreenShell step={step} onBack={onBack} onNext={onNext}
+          canProceed={canProceed} isLastStep={false} isSubmitting={isSubmitting} showBack={showBack}>
+
+          <h2 className="heading-h2">Có ai cần góc làm việc hoặc học tập riêng không?</h2>
+          <div className="options-list" style={{ marginTop: 16 }}>
+            {lamViecOptions.map(opt => (
+              <SelectionCard key={opt.value} icon={opt.icon} label={opt.label}
+                selected={answers.khongGianLamViec.includes(opt.value)} type="radio" size="md"
+                onClick={() => update('khongGianLamViec', [opt.value])} />
+            ))}
+          </div>
+
+          <div className="divider" />
+
+          <h2 className="heading-h2">Bạn muốn ngôi nhà mang cảm giác gì?</h2>
+          <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 6 }}>Chọn tất cả phù hợp</p>
+          <div className="options-list" style={{ marginTop: 12 }}>
+            {camGiacOptions.map(opt => (
+              <SelectionCard key={opt.value} icon={opt.icon} label={opt.label}
+                selected={answers.camGiacKhongGian.includes(opt.value)} type="checkbox" size="md"
+                onClick={() => toggleArray('camGiacKhongGian', opt.value)} />
+            ))}
+          </div>
+
+        </ScreenShell>
+      );
+    }
+    function S08_ThamMy({ answers, update, step, onBack, onNext, canProceed, showBack, isSubmitting }) {
+      const khongGianOptions = [
+        { value: 'garage',    label: 'Garage / Chỗ để xe', icon: Ph.Car         },
+        { value: 'thang-may', label: 'Thang máy',           icon: Ph.Elevator    },
+        { value: 'khong-can', label: 'Không cần thêm',      icon: Ph.MinusCircle },
+      ];
+      const thamMyOptions = [
+        { value: 'vua-du',         label: 'Đẹp & bền',             subLabel: 'Không cần xa xỉ, cần bền đẹp lâu dài',  icon: Ph.Diamond     },
+        { value: 'sang-thoai-mai', label: 'Sang & thoải mái',      subLabel: 'Phong cách cao nhưng vẫn thực tế',       icon: Ph.CrownSimple },
+        { value: 'cao-cap',        label: 'Cao cấp',               subLabel: 'Vật liệu tốt nhất, không giới hạn',      icon: Ph.Star        },
+        { value: 'tiet-kiem',      label: 'Đơn giản & tiết kiệm',  subLabel: 'Đẹp vừa đủ trong ngân sách tốt nhất',    icon: Ph.PiggyBank   },
+      ];
+
+      const handleKhongGian = (value) => {
+        if (value === 'khong-can') {
+          update('khongGianDacBiet',
+            answers.khongGianDacBiet.includes('khong-can') ? [] : ['khong-can']
+          );
+        } else {
+          const filtered = answers.khongGianDacBiet.filter(v => v !== 'khong-can');
+          update('khongGianDacBiet',
+            filtered.includes(value) ? filtered.filter(v => v !== value) : [...filtered, value]
+          );
+        }
+      };
+
+      return (
+        <ScreenShell step={step} onBack={onBack} onNext={onNext}
+          canProceed={canProceed} isLastStep={false} isSubmitting={isSubmitting} showBack={showBack}>
+
+          <h2 className="heading-h2">Không gian đặc biệt nào cần có?</h2>
+          <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 6 }}>Chọn tất cả phù hợp</p>
+          <div className="options-list" style={{ marginTop: 12 }}>
+            {khongGianOptions.map(opt => (
+              <SelectionCard key={opt.value} icon={opt.icon} label={opt.label}
+                selected={answers.khongGianDacBiet.includes(opt.value)} type="checkbox" size="md"
+                onClick={() => handleKhongGian(opt.value)} />
+            ))}
+          </div>
+
+          <div className="divider" />
+
+          <h2 className="heading-h2">Kỳ vọng thẩm mỹ & ngân sách?</h2>
+          <div className="options-list" style={{ marginTop: 16 }}>
+            {thamMyOptions.map(opt => (
+              <SelectionCard key={opt.value} icon={opt.icon} label={opt.label} subLabel={opt.subLabel}
+                selected={answers.thamMy === opt.value} type="radio" size="lg"
+                onClick={() => update('thamMy', opt.value)} />
+            ))}
+          </div>
+
+        </ScreenShell>
+      );
+    }
+
+    function S09_UuTien({ answers, update, step, onBack, onNext, canProceed, showBack, isSubmitting }) {
+      const uuTienOptions = [
+        { value: 'kien-truc', label: 'Kiến trúc',                   subLabel: 'Đầu tư nhiều hơn vào phần vỏ công trình',  icon: Ph.Tree    },
+        { value: 'noi-that',  label: 'Nội thất',                    subLabel: 'Kết cấu cơ bản, đầu tư mạnh vào nội thất', icon: Ph.Couch   },
+        { value: 'dong-deu',  label: 'Đồng đều & tiết kiệm tối đa', subLabel: 'Cân bằng cả hai trong ngân sách hợp lý',    icon: Ph.Scales  },
+        { value: 'tu-van',    label: 'Cần tư vấn thêm',             subLabel: 'Chưa có định hướng rõ ràng',                icon: Ph.Compass },
+      ];
+      const timelineOptions = [
+        { value: '1-3-thang',   label: 'Trong 1–3 tháng tới' },
+        { value: '3-6-thang',   label: '3–6 tháng tới'       },
+        { value: 'sau-6-thang', label: 'Sau 6 tháng'          },
+        { value: 'chua-chac',   label: 'Chưa chắc'            },
+      ];
+      return (
+        <ScreenShell step={step} onBack={onBack} onNext={onNext}
+          canProceed={canProceed} isLastStep={false} isSubmitting={isSubmitting} showBack={showBack}>
+
+          <h2 className="heading-h2">Bạn ưu tiên đầu tư vào đâu?</h2>
+          <div className="options-list" style={{ marginTop: 16 }}>
+            {uuTienOptions.map(opt => (
+              <SelectionCard key={opt.value} icon={opt.icon} label={opt.label} subLabel={opt.subLabel}
+                selected={answers.uuTienDauTu === opt.value} type="radio" size="lg"
+                onClick={() => update('uuTienDauTu', opt.value)} />
+            ))}
+          </div>
+
+          <div className="divider" />
+
+          <h2 className="heading-h2">Dự kiến bắt đầu khi nào?</h2>
+          <div className="options-list" style={{ marginTop: 16 }}>
+            {timelineOptions.map(opt => (
+              <SelectionCard key={opt.value} label={opt.label}
+                selected={answers.timeline === opt.value} type="radio" size="md"
+                onClick={() => update('timeline', opt.value)} />
+            ))}
+          </div>
+
+        </ScreenShell>
+      );
+    }
+
+    function S10_LienHe({ answers, update, step, onBack, onNext, canProceed, showBack, isSubmitting }) {
+      return (
+        <ScreenShell step={step} onBack={onBack} onNext={onNext}
+          canProceed={canProceed} isLastStep={true} isSubmitting={isSubmitting} showBack={showBack}>
+
+          <h2 className="heading-h2">Thông tin liên hệ</h2>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 8, lineHeight: 1.6 }}>
+            Chúng tôi sẽ liên hệ để sắp xếp buổi gặp mặt tư vấn.
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 24 }}>
+            <TextInput
+              label="Họ và tên *"
+              placeholder="Nguyễn Văn A"
+              value={answers.hoTen}
+              onChange={v => update('hoTen', v)}
+            />
+            <TextInput
+              label="Số điện thoại *"
+              placeholder="0901 234 567"
+              type="tel"
+              value={answers.soDienThoai}
+              onChange={v => update('soDienThoai', v)}
+            />
+            <TextInput
+              label="Email *"
+              placeholder="example@gmail.com"
+              type="email"
+              value={answers.email}
+              onChange={v => update('email', v)}
+            />
+          </div>
+
+          <div className="privacy-note" style={{ marginTop: 24, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+            {Ph.Lock && <Ph.Lock size={16} weight="bold" color="var(--text-secondary)" style={{ flexShrink: 0, marginTop: 2 }} />}
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+              Thông tin của bạn được bảo mật hoàn toàn và chỉ dùng để liên hệ tư vấn.
+            </p>
+          </div>
+
+        </ScreenShell>
+      );
+    }
+
+    function S11_CamOn({ answers, update, onSubmit, isSubmitting }) {
+      const [submitted, setSubmitted] = React.useState(false);
+
+      const bietDenOptions = [
+        { value: 'ban-be',      label: 'Bạn bè / Người thân giới thiệu', icon: Ph.Users        },
+        { value: 'mang-xa-hoi', label: 'Mạng xã hội',                    icon: Ph.ShareNetwork },
+        { value: 'khac',        label: 'Khác',                            icon: Ph.DotsThree    },
+      ];
+
+      const handleSubmit = async () => {
+        try {
+          await onSubmit();
+          setSubmitted(true);
+        } catch (_) {}
+      };
+
+      return (
+        <div style={{ height: '100%', background: 'var(--dark)', display: 'flex', flexDirection: 'column' }}>
+          {/* Brand top bar */}
+          <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'flex-end', alignItems: 'baseline', gap: 6, flexShrink: 0 }}>
+            <span className="brand-name" style={{ color: 'var(--accent)' }}>D-CONCEPT</span>
+            <span className="brand-sub">studio</span>
+          </div>
+
+          {/* Scrollable body */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '24px 24px 0' }}>
+            <div className="check-circle" style={{ background: 'rgba(196,164,107,0.12)' }}>
+              {Ph.CheckCircle
+                ? <Ph.CheckCircle size={40} weight="fill" color="var(--accent)" />
+                : <span style={{ fontSize: 32, color: 'var(--accent)' }}>✓</span>
+              }
+            </div>
+
+            <h1 className="heading-h1" style={{ color: 'var(--text-on-dark)', marginTop: 24 }}>
+              Cảm ơn anh / chị<br />đã chia sẻ!
+            </h1>
+
+            <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 16, lineHeight: 1.75 }}>
+              D-Concept đã nhận được thông tin của bạn. Chúng tôi sẽ liên hệ trong vòng{' '}
+              <strong style={{ color: 'var(--accent)' }}>24 giờ</strong>{' '}
+              để xác nhận lịch tư vấn sơ bộ — hoàn toàn miễn phí.
+            </p>
+
+            <div style={{ height: 1, background: 'var(--dark-600)', margin: '32px 0' }} />
+
+            <h2 className="heading-h2" style={{ color: 'var(--text-on-dark)' }}>Bạn biết đến D-Concept qua…</h2>
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 6 }}>Tuỳ chọn — giúp chúng tôi cải thiện</p>
+            <div className="options-list" style={{ marginTop: 12 }}>
+              {bietDenOptions.map(opt => (
+                <SelectionCard key={opt.value} icon={opt.icon} label={opt.label}
+                  selected={answers.bietDen === opt.value} type="radio" size="md"
+                  onClick={() => update('bietDen', opt.value)} />
+              ))}
+            </div>
+          </div>
+
+          {/* Footer — submit button + tagline */}
+          <div style={{
+            flexShrink: 0,
+            padding: '16px 24px',
+            paddingBottom: 'max(24px, env(safe-area-inset-bottom))',
+          }}>
+            {submitted ? (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, height: 52, color: 'var(--accent)', fontSize: 14, fontWeight: 500 }}>
+                {Ph.CheckCircle && <Ph.CheckCircle size={20} weight="fill" />}
+                Đã gửi thành công!
+              </div>
+            ) : (
+              <button className="btn btn-accent-lg" onClick={handleSubmit} disabled={isSubmitting}>
+                {isSubmitting ? <><span className="spinner" /> Đang gửi…</> : 'Gửi thông tin →'}
+              </button>
+            )}
+            <p style={{ fontSize: 12, color: 'rgba(232,224,212,0.3)', textAlign: 'center', marginTop: 16 }}>
+              Mỗi ngôi nhà là một câu chuyện.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    // ── MAIN APP ───────────────────────────────────────────────────────────────
+    function App() {
+      const [answers, setAnswers] = useState({
+        loaiCongTrinh: null,
+        hinhThucCongTrinh: null,
+        diaTinhThanh: '', diaQuanHuyen: '',
+        dienTich: '', soTang: '',
+        soNguoiSong: null, thanhVienDacBiet: [],
+        soPhongNgu: null, khongGianBep: null,
+        mucDichPhongKhach: null, toChucTiecTan: null,
+        khongGianLamViec: [], camGiacKhongGian: [],
+        khongGianDacBiet: [],
+        thamMy: null, nganSach: null,
+        uuTienDauTu: null, timeline: null,
+        hoTen: '', soDienThoai: '', email: '',
+        bietDen: null,
+      });
+
+      // current = active screen index, prev = exiting screen index
+      const [current, setCurrent]       = useState(0);
+      const [prev, setPrev]             = useState(null);
+      const [direction, setDirection]   = useState('forward');
+      const [transitioning, setTrans]   = useState(false);
+      const [isSubmitting, setSubmit]   = useState(false);
+      const [toast, setToast]           = useState('');
+
+      const update       = (k, v) => setAnswers(a => ({ ...a, [k]: v }));
+      const toggleArray  = (k, v) => setAnswers(a => {
+        const arr = a[k];
+        return { ...a, [k]: arr.includes(v) ? arr.filter(x => x !== v) : [...arr, v] };
+      });
+
+      const canProceed = (idx) => {
+        switch (idx) {
+          case 0:  return true;
+          case 1:  return !!answers.loaiCongTrinh && !!answers.dienTich;
+          case 2:  return !!answers.hinhThucCongTrinh;
+          case 3:  return !!answers.soNguoiSong;
+          case 4:  return !!answers.soPhongNgu && !!answers.khongGianBep;
+          case 5:  return !!answers.mucDichPhongKhach && !!answers.toChucTiecTan;
+          case 6:  return true;
+          case 7:  return !!answers.thamMy;
+          case 8:  return !!answers.uuTienDauTu && !!answers.timeline;
+          case 9:  return !!answers.hoTen && answers.soDienThoai.length >= 9 && /\S+@\S+\.\S+/.test(answers.email);
+          case 10: return true;
+          default: return false;
+        }
+      };
+
+      const navigate = useCallback((to, dir) => {
+        if (transitioning) return;
+        setTrans(true);
+        setDirection(dir);
+        setPrev(current);
+        setCurrent(to);
+        // After animation completes, clean up exiting screen
+        setTimeout(() => {
+          setPrev(null);
+          setTrans(false);
+        }, 320);
+      }, [current, transitioning]);
+
+      const goNext = useCallback(() => {
+        if (transitioning || current >= 10) return;
+        navigate(current + 1, 'forward');
+      }, [current, transitioning, navigate]);
+
+      const goBack = useCallback(() => {
+        if (transitioning || current === 0) return;
+        navigate(current - 1, 'backward');
+      }, [current, transitioning, navigate]);
+
+      const handleSubmit = async () => {
+        setSubmit(true);
+        setToast('');
+        try {
+          if (GOOGLE_SCRIPT_URL) {
+            const payload = { ...answers };
+            Object.keys(LABELS).forEach(k => {
+              if (payload[k] && LABELS[k][payload[k]]) payload[k] = LABELS[k][payload[k]];
+            });
+            await fetch(GOOGLE_SCRIPT_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'text/plain' },
+              body: JSON.stringify(payload),
+              mode: 'no-cors',
+            });
+          }
+          // success — caller (S11) handles UI state
+        } catch (err) {
+          console.error(err);
+          setToast('Có lỗi xảy ra. Vui lòng thử lại.');
+          setTimeout(() => setToast(''), 3000);
+          throw err;
+        } finally {
+          setSubmit(false);
+        }
+      };
+
+      const sharedProps = {
+        answers, update, toggleArray,
+        onBack: goBack, onNext: goNext,
+        isSubmitting,
+      };
+
+      const renderScreen = (idx) => {
+        const props = { ...sharedProps, step: idx, showBack: idx > 0 && idx < 10 };
+        switch (idx) {
+          case 0:  return <S01_Welcome onNext={goNext} />;
+          case 1:  return <S02_LoaiCongTrinh {...props} canProceed={canProceed(1)} />;
+          case 2:  return <S03_HinhThuc    {...props} canProceed={canProceed(2)} />;
+          case 3:  return <S04_GiaDinh     {...props} canProceed={canProceed(3)} />;
+          case 4:  return <S05_KhongGian   {...props} canProceed={canProceed(4)} />;
+          case 5:  return <S06_ThoiQuen    {...props} canProceed={canProceed(5)} />;
+          case 6:  return <S07_LamViec     {...props} canProceed={canProceed(6)} />;
+          case 7:  return <S08_ThamMy      {...props} canProceed={canProceed(7)} />;
+          case 8:  return <S09_UuTien      {...props} canProceed={canProceed(8)} />;
+          case 9:  return <S10_LienHe      {...props} canProceed={canProceed(9)} />;
+          case 10: return <S11_CamOn       answers={answers} update={update} onSubmit={handleSubmit} isSubmitting={isSubmitting} />;
+          default: return null;
+        }
+      };
+
+      return (
+        <div className="app-shell">
+          {/* Exiting screen */}
+          {prev !== null && (
+            <div className={`screen-wrap ${direction === 'forward' ? 'exit-forward' : 'exit-backward'}`}>
+              {renderScreen(prev)}
+            </div>
+          )}
+          {/* Entering / active screen */}
+          <div className={`screen-wrap ${transitioning ? (direction === 'forward' ? 'enter-forward' : 'enter-backward') : ''}`}>
+            {renderScreen(current)}
+          </div>
+
+          {toast && <div className="toast">{toast}</div>}
+        </div>
+      );
+    }
+
+    // ── RENDER ─────────────────────────────────────────────────────────────────
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
